@@ -1,0 +1,69 @@
+{
+    "name": "tonymans33/video-optimizer",
+    "description": "Optimize your Filament videos before they reach your database.",
+    "keywords": [
+        "tonymans33",
+        "laravel",
+        "filament",
+        "filamentphp",
+        "video",
+        "optimization",
+        "video-optimizer",
+        "ffmpeg"
+    ],
+    "homepage": "https://github.com/tonymans33/video-optimizer",
+    "support": {
+        "issues": "https://github.com/tonymans33/video-optimizer/issues",
+        "source": "https://github.com/tonymans33/video-optimizer"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tony Mansour",
+            "email": "mansourtony44@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/forms": "^4.0",
+        "illuminate/contracts": "^11.0|^12.0",
+        "php-ffmpeg/php-ffmpeg": "^1.2",
+        "spatie/laravel-package-tools": "^1.19.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^8.0",
+        "spatie/laravel-medialibrary": "^11.0",
+        "orchestra/testbench": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tonymans33\\VideoOptimizer\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tonymans33\\VideoOptimizer\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "format": "vendor/bin/pint"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Tonymans33\\VideoOptimizer\\VideoOptimizerServiceProvider"
+            ],
+            "aliases": {
+                "VideoOptimizer": "Tonymans33\\VideoOptimizer\\Facades\\VideoOptimizer"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
