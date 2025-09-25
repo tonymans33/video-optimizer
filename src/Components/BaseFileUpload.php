@@ -20,9 +20,11 @@ use FFMpeg\Format\Video\X264;
 use League\Flysystem\UnableToCheckFileExistence;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Throwable;
+use Filament\Forms\Components\FileUpload;
 
 
-class BaseFileUpload extends Field
+
+class BaseFileUpload extends FileUpload
 {
     use Concerns\HasUploadingMessage;
 
@@ -71,7 +73,7 @@ class BaseFileUpload extends Field
 
     protected string | Closure | null $fileNamesStatePath = null;
 
-    protected string | Closure $visibility = 'public';
+    protected string | Closure | null $visibility = 'public';
 
     protected ?Closure $deleteUploadedFileUsing = null;
 
