@@ -5,6 +5,22 @@
 
 Automatically optimize and convert videos uploaded through Filament forms using FFmpeg. Reduce file sizes and standardize formats without any manual intervention.
 
+## Results
+
+See the dramatic file size reduction:
+
+### Before Optimization
+**Original MP4**: 17.8 MB
+
+![Before optimization - 17.8 MB MP4 file](.github/images/before-optimization.png)
+
+### After Optimization
+**Optimized WebM**: 679 KB (96% reduction!)
+
+![After optimization - 679 KB WebM file](.github/images/after-optimization.png)
+
+> 🎯 **Result**: Same video quality, **96% smaller file size** - from 17.8 MB down to just 679 KB!
+
 ## Features
 
 - 🎬 **Automatic video optimization** during upload
