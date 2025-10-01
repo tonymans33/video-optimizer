@@ -80,7 +80,7 @@ class SpatieMediaLibraryFileUpload extends FileUpload
             $component->state($files);
         });
 
-        $this->afterStateHydrated(static function (BaseFileUpload $component, string | array | null $state): void {
+        $this->afterStateHydrated(static function (SpatieMediaLibraryFileUpload $component, string | array | null $state): void {
             if (is_array($state)) {
                 return;
             }

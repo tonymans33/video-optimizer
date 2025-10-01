@@ -11,6 +11,6 @@ class VideoOptimizer extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return self::class;
+        return 'video-optimizer';
     }
 }

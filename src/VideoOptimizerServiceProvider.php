@@ -2,12 +2,7 @@
 
 namespace Tonymans33\VideoOptimizer;
 
-use Filament\Forms\Components\BaseFileUpload;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Foundation\AliasLoader;
-use Tonymans33\VideoOptimizer\Components\BaseFileUpload as CustomBaseFileUpload;
-use Tonymans33\VideoOptimizer\Components\SpatieMediaLibraryFileUpload as CustomSpatieMediaLibraryFileUpload;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -18,8 +13,12 @@ class VideoOptimizerServiceProvider extends PackageServiceProvider
 
     public function boot()
     {
-        AliasLoader::getInstance()->alias(BaseFileUpload::class, CustomBaseFileUpload::class);
-        AliasLoader::getInstance()->alias(SpatieMediaLibraryFileUpload::class, CustomSpatieMediaLibraryFileUpload::class);
+        parent::boot();
+
+        // Note: Class aliasing doesn't work for overriding Filament components
+        // Users should directly use the custom components instead
+        // AliasLoader::getInstance()->alias(BaseFileUpload::class, CustomBaseFileUpload::class);
+        // AliasLoader::getInstance()->alias(SpatieMediaLibraryFileUpload::class, CustomSpatieMediaLibraryFileUpload::class);
     }
 
     public function configurePackage(Package $package): void
