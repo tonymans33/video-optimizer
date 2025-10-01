@@ -142,7 +142,7 @@ class BaseFileUpload extends FileUpload
             $component->saveUploadedFiles();
         });
 
-        $this->dehydrateStateUsing(static function (BaseFileUpload $component, ?array $state): string | array | null | TemporaryUploadedFile {
+        $this->dehydrateStateUsing(static function (BaseFileUpload $component, ?array $state): string | array | null {
             $files = array_values($state ?? []);
 
             if ($component->isMultiple()) {
