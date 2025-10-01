@@ -319,8 +319,15 @@ class BaseFileUpload extends FileUpload
         $state = $this->getState();
 
         foreach ($this->afterStateUpdated as $callback) {
+            $value = $this->isMultiple() ? $state : Arr::first($state ?? []);
+
+            // Skip callbacks if value is a TemporaryUploadedFile (not yet saved)
+            if ($value instanceof TemporaryUploadedFile) {
+                continue;
+            }
+
             $this->evaluate($callback, [
-                'state' => $this->isMultiple() ? $state : Arr::first($state ?? []),
+                'state' => $value,
             ]);
         }
 
