@@ -142,7 +142,12 @@ class BaseFileUpload extends FileUpload
             $component->saveUploadedFiles();
         });
 
-        $this->dehydrateStateUsing(static function (BaseFileUpload $component, ?array $state): string | array | null {
+        $this->dehydrateStateUsing(static function (BaseFileUpload $component, $state): string | array | null {
+            // If state is TemporaryUploadedFile, return it as-is (not yet saved)
+            if ($state instanceof TemporaryUploadedFile) {
+                return null;
+            }
+
             $files = array_values($state ?? []);
 
             if ($component->isMultiple()) {
