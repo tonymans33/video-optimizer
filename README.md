@@ -1,48 +1,72 @@
 # Video Optimizer for Filament
 
-Optimize your Filament videos before they reach your database using FFmpeg.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/tonymans33/video-optimizer.svg?style=flat-square)](https://packagist.org/packages/tonymans33/video-optimizer)
+[![Total Downloads](https://img.shields.io/packagist/dt/tonymans33/video-optimizer.svg?style=flat-square)](https://packagist.org/packages/tonymans33/video-optimizer)
+
+Automatically optimize and convert videos uploaded through Filament forms using FFmpeg. Reduce file sizes and standardize formats without any manual intervention.
+
+## Features
+
+- 🎬 **Automatic video optimization** during upload
+- 🔄 **Format conversion** (WebM, MP4)
+- ⚡ **Configurable quality levels** (low, medium, high)
+- 📦 **Works with standard FileUpload and Spatie Media Library**
+- 🔌 **Filament v3 & v4 compatible**
+- 🛡️ **Graceful fallback** if optimization fails
+
+## Requirements
+
+- PHP 8.1+
+- Laravel 10.0+
+- Filament 3.0+ or 4.0+
+- **FFmpeg installed on your server**
+
+### Installing FFmpeg
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install ffmpeg
+
+# macOS
+brew install ffmpeg
+
+# Verify installation
+ffmpeg -version
+```
 
 ## Installation
+
+Install the package via Composer:
 
 ```bash
 composer require tonymans33/video-optimizer
 ```
 
-Publish the config file:
+Publish the configuration file (optional):
 
 ```bash
 php artisan vendor:publish --tag="video-optimizer-config"
 ```
 
-## Requirements
-
-- PHP 8.2+
-- Laravel 11.0+
-- Filament 4.0+
-- FFmpeg installed on your server
-
 ## Usage
 
-This package provides custom FileUpload components that automatically optimize videos during upload.
+### Basic Usage
 
-### Basic FileUpload Component
-
-Instead of using Filament's default `FileUpload`, use the custom component from this package:
+Replace Filament's `FileUpload` with `VideoOptimizer`:
 
 ```php
-use Tonymans33\VideoOptimizer\Components\BaseFileUpload;
+use Tonymans33\VideoOptimizer\Components\VideoOptimizer;
 
-BaseFileUpload::make('video')
+VideoOptimizer::make('video')
     ->disk('public')
     ->directory('videos')
-    ->acceptedFileTypes(['video/*'])
-    ->optimize('medium')  // 'low', 'medium', 'high'
-    ->format('webm');     // 'webm' or 'mp4'
+    ->optimize('medium')  // 'low', 'medium', 'high', or null
+    ->format('webm');     // 'webm', 'mp4', or null
 ```
 
-### Spatie Media Library Component
+### With Spatie Media Library
 
-For Spatie Media Library integration:
+For projects using [Spatie Media Library](https://github.com/spatie/laravel-medialibrary):
 
 ```php
 use Tonymans33\VideoOptimizer\Components\SpatieMediaLibraryFileUpload;
@@ -50,13 +74,23 @@ use Tonymans33\VideoOptimizer\Components\SpatieMediaLibraryFileUpload;
 SpatieMediaLibraryFileUpload::make('videos')
     ->collection('videos')
     ->multiple()
-    ->optimize('medium')  // 'low', 'medium', 'high'
-    ->format('webm');     // 'webm' or 'mp4'
+    ->optimize('medium')
+    ->format('webm');
+```
+
+### Using the Facade
+
+```php
+use Tonymans33\VideoOptimizer\Facades\VideoOptimizer;
+
+VideoOptimizer::make('video')
+    ->optimize('high')
+    ->format('mp4');
 ```
 
 ## Configuration
 
-The `config/video-optimizer.php` file allows you to set default optimization settings:
+Set global defaults in `config/video-optimizer.php`:
 
 ```php
 return [
@@ -68,44 +102,131 @@ return [
 ];
 ```
 
-### Optimization Levels
+Component-level settings override these defaults.
 
-- **low**: CRF 36 - Smaller file size, lower quality
-- **medium**: CRF 28 - Balanced quality and size (recommended)
-- **high**: CRF 20 - Higher quality, larger file size
+## Optimization Levels
 
-### Formats
+| Level | CRF | File Size | Quality | Use Case |
+|-------|-----|-----------|---------|----------|
+| `low` | 36 | Smallest | Lower | Web previews, thumbnails |
+| `medium` | 28 | Balanced | Good | **Recommended for most use cases** |
+| `high` | 20 | Larger | Best | High-quality content, archives |
+| `null` | - | Original | Original | No optimization |
 
-- **webm**: Modern format with good compression (default)
-- **mp4**: Universal compatibility using H.264 codec
+**CRF** = Constant Rate Factor (lower = better quality, larger file)
+
+## Supported Formats
+
+- **webm** - Modern, efficient format with excellent compression
+- **mp4** - Universal compatibility using H.264 codec
+- **null** - Keep original format
 
 ## How It Works
 
-1. When a video file is uploaded, the component detects it by MIME type
-2. If optimization or format conversion is enabled, FFmpeg processes the video
-3. The optimized video is saved to your configured disk
-4. Original temporary files are cleaned up automatically
+1. User uploads a video through your Filament form
+2. Component detects video MIME type
+3. If optimization/conversion is enabled:
+   - Creates temporary file
+   - Processes with FFmpeg
+   - Saves optimized version
+   - Cleans up temporary files
+4. If processing fails, original file is uploaded (graceful fallback)
 
-## Important Notes
+## Advanced Example
 
-- **FFmpeg Required**: Make sure FFmpeg is installed on your server
-- **Direct Component Usage**: This package extends Filament's FileUpload components. You must use the components from this package directly (`Tonymans33\VideoOptimizer\Components\BaseFileUpload` or `Tonymans33\VideoOptimizer\Components\SpatieMediaLibraryFileUpload`)
-- **Processing Time**: Video optimization takes time. Consider using queue jobs for large files
-- **Disk Space**: Temporary files are created during processing
+```php
+use Tonymans33\VideoOptimizer\Components\VideoOptimizer;
+
+VideoOptimizer::make('promotional_video')
+    ->label('Promotional Video')
+    ->disk('s3')
+    ->directory('marketing/videos')
+    ->visibility('public')
+    ->optimize('high')
+    ->format('mp4')
+    ->maxSize(512000) // 500MB
+    ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo'])
+    ->downloadable()
+    ->openable()
+    ->deletable();
+```
+
+## Performance Considerations
+
+- **Processing Time**: Video optimization is CPU-intensive and takes time
+- **For Large Files**: Consider implementing queue jobs:
+
+```php
+// Queue jobs for async processing
+VideoOptimizer::make('video')
+    ->optimize('medium')
+    ->format('webm')
+    // Process after form submission using queued jobs
+    ->saveUploadedFileUsing(function ($file) {
+        dispatch(new OptimizeVideoJob($file));
+    });
+```
+
+- **Disk Space**: Ensure sufficient temporary storage for processing
+- **Memory Limits**: Large videos may require increased PHP memory limits
 
 ## Troubleshooting
 
+### FFmpeg not found
+
+**Error**: `Binary not found`
+
+**Solution**: Install FFmpeg and ensure it's in your system PATH
+
+```bash
+# Check if FFmpeg is installed
+which ffmpeg
+ffmpeg -version
+```
+
 ### Videos not being optimized
 
-1. Verify FFmpeg is installed: `ffmpeg -version`
-2. Check Laravel logs for errors
-3. Ensure the `local` disk is configured in `config/filesystems.php`
-4. Make sure you're using the custom components from this package
+1. Check Laravel logs: `storage/logs/laravel.log`
+2. Verify MIME type is detected as video
+3. Confirm optimization level is set (not `null`)
+4. Ensure `local` disk exists in `config/filesystems.php`
 
-### Errors during upload
+### Upload fails silently
 
-Check the Laravel log file for detailed error messages. The package will fall back to uploading the original file if optimization fails.
+The package falls back to original file upload if optimization fails. Check logs for error details.
+
+### Memory limit errors
+
+For large videos, increase PHP memory:
+
+```php
+// In your service provider or config
+ini_set('memory_limit', '512M');
+```
+
+## Testing
+
+```bash
+composer test
+```
+
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on recent changes.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Security
+
+If you discover any security issues, please email mansourtony44@gmail.com instead of using the issue tracker.
+
+## Credits
+
+- [Tony Mansour](https://github.com/tonymans33)
+- [All Contributors](../../contributors)
 
 ## License
 
-MIT License - see LICENSE.md for details
+The MIT License (MIT). Please see [License File](LICENSE) for more information.
