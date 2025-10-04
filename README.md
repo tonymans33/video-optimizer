@@ -3,6 +3,8 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/tonymans33/video-optimizer.svg?style=flat-square)](https://packagist.org/packages/tonymans33/video-optimizer)
 [![Total Downloads](https://img.shields.io/packagist/dt/tonymans33/video-optimizer.svg?style=flat-square)](https://packagist.org/packages/tonymans33/video-optimizer)
 
+![Video Optimizer for Filament](.github/images/hero-image.png)
+
 Automatically optimize and convert videos uploaded through Filament forms using FFmpeg. Reduce file sizes and standardize formats without any manual intervention.
 
 ## Results
